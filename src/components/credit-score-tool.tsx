@@ -1,7 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
-import { useEffect } from 'react';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getCreditAnalysis } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,7 +26,7 @@ function SubmitButton() {
 }
 
 export function CreditScoreTool() {
-  const [state, formAction] = useFormState(getCreditAnalysis, initialState);
+  const [state, formAction] = useActionState(getCreditAnalysis, initialState);
   const { toast } = useToast();
   const { pending } = useFormStatus();
 
