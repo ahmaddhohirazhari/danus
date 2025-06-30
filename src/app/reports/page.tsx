@@ -7,15 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Download } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { ChartTooltipContent, ChartContainer, type ChartConfig, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
-
-const chartData = [
-  { month: 'Aug', income: 18600000, expenses: 8000000 },
-  { month: 'Sep', income: 30500000, expenses: 12000000 },
-  { month: 'Oct', income: 23700000, expenses: 9800000 },
-  { month: 'Nov', income: 27800000, expenses: 11000000 },
-  { month: 'Dec', income: 18900000, expenses: 8500000 },
-  { month: 'Jan', income: 23900000, expenses: 10200000 },
-];
+import { chartData, pnlData } from '@/lib/data';
 
 const chartConfig = {
   income: {
@@ -27,16 +19,6 @@ const chartConfig = {
     color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
-
-const pnlData = {
-  revenue: 55000000,
-  cogs: 21000000,
-  grossProfit: 34000000,
-  operatingExpenses: 12500000,
-  operatingIncome: 21500000,
-  taxes: 4300000,
-  netIncome: 17200000,
-};
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);

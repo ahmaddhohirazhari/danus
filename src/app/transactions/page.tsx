@@ -4,17 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, Upload } from 'lucide-react';
+import { mockTransactions } from '@/lib/data';
 import type { Transaction } from '@/lib/types';
-
-const mockTransactions: Transaction[] = [
-  { id: '1', date: '2023-10-26', description: 'Penjualan barang dagang', category: 'Sales', type: 'Income', amount: 1500000 },
-  { id: '2', date: '2023-10-25', description: 'Beli ATK', category: 'Supplies', type: 'Expense', amount: 250000 },
-  { id: '3', date: '2023-10-25', description: 'Pembayaran dari Klien A', category: 'Sales', type: 'Income', amount: 3000000 },
-  { id: '4', date: '2023-10-24', description: 'Bayar tagihan listrik', category: 'Utilities', type: 'Expense', amount: 450000 },
-  { id: '5', date: '2023-10-23', description: 'Bahan baku produksi', category: 'Inventory', type: 'Expense', amount: 1200000 },
-  { id: '6', date: '2023-10-22', description: 'Jasa konsultasi', category: 'Services', type: 'Income', amount: 5000000 },
-  { id: '7', date: '2023-10-21', description: 'Biaya sewa toko', category: 'Rent', type: 'Expense', amount: 2000000 },
-];
 
 export default function TransactionsPage() {
   const formatCurrency = (amount: number) => {

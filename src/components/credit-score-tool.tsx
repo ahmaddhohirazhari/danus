@@ -1,64 +1,58 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useState, useTransition } from 'react';
 import { getCreditAnalysis } from '@/app/actions';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { Terminal } from 'lucide-react';
+import { Terminal, Bot } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const initialState = {
-  data: null,
-  message: '',
-};
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? 'Analyzing...' : 'Analyze Creditworthiness'}
-    </Button>
-  );
-}
+import type { CreditworthinessOutput } from '@/ai/flows/creditworthiness-analysis';
 
 export function CreditScoreTool() {
-  const [state, formAction] = useActionState(getCreditAnalysis, initialState);
-  const { toast } = useToast();
-  const { pending } = useFormStatus();
+  const [isPending, startTransition] = useTransition();
+  const [state, setState] = useState<{
+    data: CreditworthinessOutput | null;
+    message: string;
+  } | null>(null);
 
-  useEffect(() => {
-    if (state.message && state.message !== 'success') {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: state.message,
-      });
-    }
-  }, [state, toast]);
+  const { toast } = useToast();
+
+  const handleAnalysis = () => {
+    startTransition(async () => {
+      const result = await getCreditAnalysis();
+      setState(result);
+      if (result.message && result.message !== 'success') {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: result.message,
+        });
+      }
+    });
+  };
+
+  const pending = isPending;
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
-      <Card>
+      <Card className="flex flex-col items-center justify-center p-6 text-center">
         <CardHeader>
-          <CardTitle>Creditworthiness Analysis</CardTitle>
+          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Bot className="size-8" />
+          </div>
+          <CardTitle>Automated Credit Analysis</CardTitle>
           <CardDescription>
-            Enter your UMKM's financial data to get a credit score based on OJK rules.
+            Click the button to analyze your existing financial data and get a
+            credit score instantly. The AI will use your transaction history to
+            provide a score based on OJK regulations.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form action={formAction} className="space-y-4">
-            <Textarea
-              name="financialData"
-              placeholder="Paste your transaction history, profit/loss statements, or describe your financial situation here..."
-              className="min-h-[300px]"
-              required
-            />
-            <SubmitButton />
-          </form>
+        <CardContent className="w-full">
+          <Button onClick={handleAnalysis} disabled={pending} className="w-full">
+            {pending ? 'Analyzing...' : 'Analyze My Financials'}
+          </Button>
         </CardContent>
       </Card>
 
@@ -86,12 +80,12 @@ export function CreditScoreTool() {
               </CardContent>
             </Card>
           </>
-        ) : state.data ? (
+        ) : state?.data ? (
           <>
             <Card>
               <CardHeader>
                 <CardTitle>Your Credit Score</CardTitle>
-                <CardDescription>Based on the provided financial data.</CardDescription>
+                <CardDescription>Based on your financial data.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 text-center">
                 <div className="text-6xl font-bold text-primary">{state.data.creditScore}

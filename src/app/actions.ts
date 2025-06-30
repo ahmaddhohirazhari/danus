@@ -5,35 +5,35 @@ import {
   type CreditworthinessInput,
   type CreditworthinessOutput,
 } from '@/ai/flows/creditworthiness-analysis';
-import { z } from 'zod';
+import { mockTransactions } from '@/lib/data';
 
-const creditAnalysisSchema = z.object({
-  financialData: z.string().min(50, 'Please provide more detailed financial data for an accurate analysis.'),
-});
-
-export async function getCreditAnalysis(
-  prevState: any,
-  formData: FormData
-): Promise<{
+export async function getCreditAnalysis(): Promise<{
   data: CreditworthinessOutput | null;
   message: string;
 }> {
-  const financialData = formData.get('financialData') as string;
-
-  const validatedFields = creditAnalysisSchema.safeParse({
-    financialData,
-  });
-
-  if (!validatedFields.success) {
-    return {
-      data: null,
-      message: validatedFields.error.flatten().fieldErrors.financialData?.[0] || 'Invalid input.',
-    };
-  }
-
   try {
+    if (!mockTransactions || mockTransactions.length === 0) {
+      return {
+        data: null,
+        message: 'No transaction data available for analysis.',
+      };
+    }
+
+    const financialData = `
+      Analyze the following UMKM transaction data to determine creditworthiness. 
+      Provide a score and a detailed analysis based on OJK rules, considering profitability, cash flow patterns, and debt-to-income indicators.
+
+      Recent Transactions:
+      ${mockTransactions
+        .map(
+          (t) =>
+            `- ${t.date}: ${t.description} | Category: ${t.category} | Type: ${t.type} | Amount: ${t.amount} IDR`
+        )
+        .join('\n')}
+    `;
+
     const input: CreditworthinessInput = {
-      financialData: validatedFields.data.financialData,
+      financialData,
     };
     const result = await analyzeCreditworthiness(input);
     return { data: result, message: 'success' };
