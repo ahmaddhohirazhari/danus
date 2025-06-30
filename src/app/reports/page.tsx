@@ -43,6 +43,32 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function ReportsPage() {
+  const handleExport = () => {
+    const pnlForExport = [
+      { category: 'Revenue', amount: pnlData.revenue },
+      { category: 'Cost of Goods Sold', amount: -pnlData.cogs },
+      { category: 'Gross Profit', amount: pnlData.grossProfit },
+      { category: 'Operating Expenses', amount: -pnlData.operatingExpenses },
+      { category: 'Operating Income', amount: pnlData.operatingIncome },
+      { category: 'Taxes', amount: -pnlData.taxes },
+      { category: 'Net Income', amount: pnlData.netIncome },
+    ];
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Category,Amount (IDR)\n";
+    pnlForExport.forEach(row => {
+      csvContent += `"${row.category}",${row.amount}\n`;
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "profit-and-loss-summary.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <AppLayout>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
@@ -90,7 +116,7 @@ export default function ReportsPage() {
               <CardTitle>Profit & Loss</CardTitle>
               <CardDescription>Summary for Q4 2023.</CardDescription>
             </div>
-            <Button size="sm" variant="outline">
+            <Button size="sm" variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
