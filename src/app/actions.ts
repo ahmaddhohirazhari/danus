@@ -19,18 +19,14 @@ export async function getCreditAnalysis(): Promise<{
       };
     }
 
-    const financialData = `
-      Analyze the following UMKM transaction data to determine creditworthiness. 
-      Provide a score and a detailed analysis based on OJK rules, considering profitability, cash flow patterns, and debt-to-income indicators.
-
-      Recent Transactions:
-      ${mockTransactions
-        .map(
-          (t) =>
-            `- ${t.date}: ${t.description} | Category: ${t.category} | Type: ${t.type} | Amount: ${t.amount} IDR`
-        )
-        .join('\n')}
-    `;
+    // The instructions for the AI are in the prompt itself.
+    // We only need to provide the raw data here.
+    const financialData = `Recent Transactions:\n${mockTransactions
+      .map(
+        (t) =>
+          `- ${t.date}: ${t.description} | Category: ${t.category} | Type: ${t.type} | Amount: ${t.amount} IDR`
+      )
+      .join('\n')}`;
 
     const input: CreditworthinessInput = {
       financialData,
@@ -38,10 +34,13 @@ export async function getCreditAnalysis(): Promise<{
     const result = await analyzeCreditworthiness(input);
     return { data: result, message: 'success' };
   } catch (error) {
-    console.error(error);
+    console.error('Error during credit analysis:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred.';
     return {
       data: null,
-      message: 'Failed to analyze creditworthiness. Please try again later.',
+      // Provide a more detailed error message to the client to help with debugging.
+      message: `Analysis failed: ${errorMessage}`,
     };
   }
 }
